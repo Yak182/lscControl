@@ -1,5 +1,4 @@
-import { useState } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useState, useEffect } from "react";
 import Image1 from "../assets/images/Slide-1.jpg";
 import Image2 from "../assets/images/Slide-2.jpg";
 import Image3 from "../assets/images/Slide-3.jpg";
@@ -13,39 +12,28 @@ const slides = [
 const HeroCarousel = () => {
     const [currentIndex, setCurrentIndex] = useState(0);
 
-    const prevSlide = () => {
-        setCurrentIndex((prev) => (prev === 0 ? slides.length - 1 : prev - 1));
-    };
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setCurrentIndex((prev) => (prev === slides.length - 1 ? 0 : prev + 1));
+        }, 5000);
+        return () => clearInterval(interval);
+    }, []);
 
-    const nextSlide = () => {
-        setCurrentIndex((prev) => (prev === slides.length - 1 ? 0 : prev + 1));
-    };
 
     return (
         <section className="relative">
-            <div className="h-[400px] md:h-[500px]">
-                <img
-                    src={slides[currentIndex].image}
-                    alt={slides[currentIndex].alt}
-                    className="w-full h-full object-cover"
-                />
+            <div className="h-[500px] md:h-[600px] overflow-hidden">
+                {slides.map((slide, index) => (
+                    <img
+                        key={index}
+                        src={slide.image}
+                        alt={slide.alt}
+                        className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${
+                            index === currentIndex ? "opacity-100" : "opacity-0"
+                        }`}
+                    />
+                ))}
             </div>
-
-            <button
-                className="carousel-btn left-4"
-                onClick={prevSlide}
-                aria-label="Previous slide"
-            >
-                <ChevronLeft className="absolute text-slate-100  top-1/2 left-4  w-8 h-8 text-foreground hover:text-opacity-20" />
-            </button>
-
-            <button
-                className="carousel-btn right-4"
-                onClick={nextSlide}
-                aria-label="Next slide"
-            >
-                <ChevronRight className="absolute text-slate-100 top-1/2 right-4 w-8 h-8 text-foreground hover:text-opacity-20" />
-            </button>
         </section>
     );
 };
